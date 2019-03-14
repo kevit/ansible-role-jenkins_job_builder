@@ -1,0 +1,63 @@
+---
+
+- name: Delete the destination directory
+  file:
+    path: "{{ item.dest }}"
+    state: absent
+  when: >
+    'force' in item and
+    item.force == true
+
+- name: Create the destination directory
+  file:
+    path: "{{ item.dest }}"
+    owner: "{{ item.owner | default(omit) }}"
+    group: "{{ item.group | default(omit) }}"
+    mode: "{{ item.mode | default(omit) }}"
+    state: directory
+
+- name: Clone or update the repo
+  git:
+    repo: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    accept_hostkey: yes
+    update: "{{ item.pull | default(true) }}"
+    ssh_opts: "{{ item.ssh_opts | default(omit) }}"
+    refspec: "{{ item.refspec | default(omit) }}"
+
+- name: Update Jenkins jobs
+  shell: >
+    jenkins-jobs
+    --conf {{ jjb_config_path }}
+    --user {{ jjb_config_jenkins_user }}
+    --password "{{ jjb_config_jenkins_password }}"
+    update {{ item.dest }}/{{ item.file }}
+  when: >
+    (
+      'run' not in item or
+      item.run == true
+    ) and (
+      'state' not in item or
+      item.state != 'absent'
+    )
+
+- name: Delete Jenkins jobs
+  shell: >
+    jenkins-jobs
+    --conf {{ jjb_config_path }}
+    --user {{ jjb_config_jenkins_user }}
+    --password "{{ jjb_config_jenkins_password }}"
+    test {{ item.dest }}/{{ item.file }} 2>&1 1>/dev/null |
+    grep -oP '(?<=INFO:jenkins_jobs.builder:Job name:  ).*' |
+    xargs jenkins-jobs
+    --conf {{ jjb_config_path }}
+    --user {{ jjb_config_jenkins_user }}
+    --password "{{ jjb_config_jenkins_password }}"
+    delete
+  when: >
+    (
+      'run' not in item or
+      item.run == true
+    ) and
+    'state' in item and
+    item.state == 'absent'
