@@ -49,12 +49,12 @@ jjb_pypi_url: https://"{{ jjb_pypi_host }}/simple/"
 jjb_config_path: /etc/jjb.cfg
 
 # Default option values of the default job_builder section
-jjb_config_job_builder_ignore_cache: yes
-jjb_config_job_builder_keep_descriptions: no
+jjb_config_job_builder_ignore_cache: true
+jjb_config_job_builder_keep_descriptions: false
 jjb_config_job_builder_include_path: .:scripts:~/git/
-jjb_config_job_builder_recursive: no
+jjb_config_job_builder_recursive: false
 jjb_config_job_builder_exclude: .*:manual:./development
-jjb_config_job_builder_allow_duplicates: no
+jjb_config_job_builder_allow_duplicates: false
 
 # Default options of the job_builder section
 jjb_config_job_builder__default:
@@ -78,7 +78,7 @@ jjb_config_job_builder: "{{
 jjb_config_jenkins_user: admin
 jjb_config_jenkins_password: admin
 jjb_config_jenkins_url: http://localhost:8080
-jjb_config_jenkins_query_plugins_info: no
+jjb_config_jenkins_query_plugins_info: false
 
 # Default options of the jenkins section
 jjb_config_jenkins__default:

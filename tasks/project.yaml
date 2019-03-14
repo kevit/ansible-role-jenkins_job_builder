@@ -20,7 +20,7 @@
   git:
     repo: "{{ item.src }}"
     dest: "{{ item.dest }}"
-    accept_hostkey: yes
+    accept_hostkey: true
     update: "{{ item.pull | default(true) }}"
     ssh_opts: "{{ item.ssh_opts | default(omit) }}"
     refspec: "{{ item.refspec | default(omit) }}"
